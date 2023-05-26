@@ -1,4 +1,5 @@
 using LordSolutions.Data;
+using LordSolutions.Data.Context;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddDbContext<LordSolutionsDbContext>();
+builder.Services.AddScoped<ILordSolutionsDbContext, LordSolutionsDbContext>();
 
 var app = builder.Build();
 
