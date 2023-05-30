@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LordSolutions.Migrations
 {
     [DbContext(typeof(LordSolutionsDbContext))]
-    [Migration("20230526021616_InitialCreate")]
+    [Migration("20230527202306_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace LordSolutions.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("clientes");
+                    b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("LordSolutions.Data.Entities.DetalleDeFactura", b =>
@@ -82,7 +82,7 @@ namespace LordSolutions.Migrations
 
                     b.HasIndex("ProductoId");
 
-                    b.ToTable("DetalleDeFactura");
+                    b.ToTable("DetallesDeFacturas");
                 });
 
             modelBuilder.Entity("LordSolutions.Data.Entities.Factura", b =>
@@ -106,7 +106,7 @@ namespace LordSolutions.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.ToTable("Factura");
+                    b.ToTable("Facturas");
                 });
 
             modelBuilder.Entity("LordSolutions.Data.Entities.Producto", b =>
@@ -132,7 +132,32 @@ namespace LordSolutions.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Producto");
+                    b.HasIndex("IdProveedor");
+
+                    b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("LordSolutions.Data.Entities.Proveedor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CorreoElectronico")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Proveedores");
                 });
 
             modelBuilder.Entity("LordSolutions.Data.Entities.DetalleDeFactura", b =>
@@ -165,6 +190,17 @@ namespace LordSolutions.Migrations
                     b.Navigation("Cliente");
                 });
 
+            modelBuilder.Entity("LordSolutions.Data.Entities.Producto", b =>
+                {
+                    b.HasOne("LordSolutions.Data.Entities.Proveedor", "Proveedor")
+                        .WithMany("Productos")
+                        .HasForeignKey("IdProveedor")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Proveedor");
+                });
+
             modelBuilder.Entity("LordSolutions.Data.Entities.Cliente", b =>
                 {
                     b.Navigation("Facturas");
@@ -178,6 +214,11 @@ namespace LordSolutions.Migrations
             modelBuilder.Entity("LordSolutions.Data.Entities.Producto", b =>
                 {
                     b.Navigation("DetallesDeFactura");
+                });
+
+            modelBuilder.Entity("LordSolutions.Data.Entities.Proveedor", b =>
+                {
+                    b.Navigation("Productos");
                 });
 #pragma warning restore 612, 618
         }

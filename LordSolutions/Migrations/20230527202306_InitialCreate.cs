@@ -12,7 +12,7 @@ namespace LordSolutions.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "clientes",
+                name: "Clientes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -23,11 +23,47 @@ namespace LordSolutions.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_clientes", x => x.Id);
+                    table.PrimaryKey("PK_Clientes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Producto",
+                name: "Proveedores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CorreoElectronico = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Proveedores", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Facturas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdCliente = table.Column<int>(type: "int", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClienteId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Facturas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Facturas_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Productos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -39,32 +75,17 @@ namespace LordSolutions.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Producto", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Factura",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdCliente = table.Column<int>(type: "int", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Factura", x => x.Id);
+                    table.PrimaryKey("PK_Productos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Factura_clientes_ClienteId",
-                        column: x => x.ClienteId,
-                        principalTable: "clientes",
+                        name: "FK_Productos_Proveedores_IdProveedor",
+                        column: x => x.IdProveedor,
+                        principalTable: "Proveedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetalleDeFactura",
+                name: "DetallesDeFacturas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -78,51 +99,59 @@ namespace LordSolutions.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DetalleDeFactura", x => x.Id);
+                    table.PrimaryKey("PK_DetallesDeFacturas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DetalleDeFactura_Factura_FacturaId",
+                        name: "FK_DetallesDeFacturas_Facturas_FacturaId",
                         column: x => x.FacturaId,
-                        principalTable: "Factura",
+                        principalTable: "Facturas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DetalleDeFactura_Producto_ProductoId",
+                        name: "FK_DetallesDeFacturas_Productos_ProductoId",
                         column: x => x.ProductoId,
-                        principalTable: "Producto",
+                        principalTable: "Productos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleDeFactura_FacturaId",
-                table: "DetalleDeFactura",
+                name: "IX_DetallesDeFacturas_FacturaId",
+                table: "DetallesDeFacturas",
                 column: "FacturaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetalleDeFactura_ProductoId",
-                table: "DetalleDeFactura",
+                name: "IX_DetallesDeFacturas_ProductoId",
+                table: "DetallesDeFacturas",
                 column: "ProductoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Factura_ClienteId",
-                table: "Factura",
+                name: "IX_Facturas_ClienteId",
+                table: "Facturas",
                 column: "ClienteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Productos_IdProveedor",
+                table: "Productos",
+                column: "IdProveedor");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DetalleDeFactura");
+                name: "DetallesDeFacturas");
 
             migrationBuilder.DropTable(
-                name: "Factura");
+                name: "Facturas");
 
             migrationBuilder.DropTable(
-                name: "Producto");
+                name: "Productos");
 
             migrationBuilder.DropTable(
-                name: "clientes");
+                name: "Clientes");
+
+            migrationBuilder.DropTable(
+                name: "Proveedores");
         }
     }
 }
