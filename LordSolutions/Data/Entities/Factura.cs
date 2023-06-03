@@ -32,7 +32,33 @@ namespace LordSolutions.Data.Entities
            IdCliente = factura.IdCliente,
            Fecha = factura.Fecha,
        };
-
+        public bool Modificar(FacturaRequest factura)
+        {
+            var cambio = false;
+            if (Id != factura.Id)
+            {
+                Id = factura.Id;
+                cambio = true;
+            }
+            if (IdCliente != factura.IdCliente)
+            {
+                IdCliente = factura.IdCliente;
+                cambio = true;
+            }
+            if (Fecha != factura.Fecha)
+            {
+                Fecha = factura.Fecha;
+                cambio = true;
+            }
+            return cambio;
+        }
+        public FacturaResponse ToResponse()
+        => new FacturaResponse()
+        {
+            Id = Id,
+            IdCliente = IdCliente,
+            Fecha = Fecha,
+        };
     }
 
 }

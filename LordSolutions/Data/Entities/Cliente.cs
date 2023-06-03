@@ -28,9 +28,41 @@ namespace LordSolutions.Data.Entities
             Nombre = cliente.Nombre,
             Telefono = cliente.Telefono,
             Direccion = cliente.Direccion,
-            Facturas = cliente.Facturas,
         };
-       
+        public bool Modificar(ClienteRequest cliente)
+        {
+            var cambio = false;
+            if (Id != cliente.Id)
+            {
+                Id = cliente.Id;
+                cambio = true;            
+            }
+            if (Nombre != cliente.Nombre)
+            {
+                Nombre = cliente.Nombre;
+                cambio = true;
+            }
+            if (Telefono != cliente.Telefono)
+            {
+                Telefono = cliente.Telefono;
+                cambio = true;
+            }
+            if (Direccion != cliente.Direccion)
+            {
+                Direccion = cliente.Direccion;
+                cambio = true;
+            }
+            return cambio;
+        }
+        public ClienteResponse ToResponse()
+        => new ClienteResponse()
+        {
+           Id = Id,
+           Nombre = Nombre,
+           Telefono = Telefono,
+           Direccion = Direccion,
+        };
+           
     }
 
 }

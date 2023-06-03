@@ -41,6 +41,52 @@ namespace LordSolutions.Data.Entities
             Factura = detalle.Factura,
         };
 
+        public bool Modificar(DetalleDeFacturaRequest detalle)
+        {
+            var cambio = false;
+            if (Id != detalle.Id)
+            {
+                Id = detalle.Id;
+                cambio = true;
+            }
+            if (IdFactura != detalle.IdFactura)
+            {
+                IdFactura = detalle.IdFactura;
+                cambio = true;
+            }
+            if (Cantidad != detalle.Cantidad)
+            {
+                Cantidad = detalle.Cantidad;
+                cambio = true;
+            }
+            if (Precio != detalle.Precio)
+            {
+                Precio = detalle.Precio;
+                cambio = true;
+            }
+            if (Producto != detalle.Producto)
+            {
+                Producto = detalle.Producto;
+                cambio = true;
+            }
+            if (Factura != detalle.Factura)
+            {
+                Factura = detalle.Factura;
+                cambio = true;
+            }
+            return cambio;
+        }
+        public DetalleDeFacturaResponse ToResponse()
+        => new DetalleDeFacturaResponse()
+        {
+            Id = Id,
+            IdFactura = IdFactura,
+            Cantidad = Cantidad,
+            Precio = Precio,
+            Producto = Producto,
+            Factura = Factura,
+        };
+
     }
 
 }
