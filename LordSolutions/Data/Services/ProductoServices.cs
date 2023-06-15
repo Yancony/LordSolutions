@@ -19,7 +19,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var producto = Producto.Crear(ProductoRequest);
+				var producto = Producto.Crear(request);
 				dbContext.Productos.Add(producto);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };
@@ -34,7 +34,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var producto = dbContext.Productos.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var producto = dbContext.Productos.FirstOrDefaultAsync(p => p.Id == request.Id);
 				if (producto == null)
 					return new Result { Message = "No se encontro el producto", Success = false };
 
@@ -53,9 +53,9 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var producto = dbContext.Productos.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var producto = dbContext.Productos.FirstOrDefaultAsync(p => p.IdProveedor == request.IdProveedor);
 				if (producto == null)
-					return new Result { Message = "No se encontro el cliente", Success = false };
+					return new Result { Message = "No se encontro el producto", Success = false };
 
 				dbContext.Productos.Remove(producto);
 				await dbContext.SaveChangesAsync();
@@ -71,11 +71,11 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var productos = await dbContext.Productos.Where(c =>
-				(c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-				.Contains(filtro.ToLower))
+				var productos = await dbContext.Productos.Where(p =>
+				(p.Nombre + " " + p.Precio + " " + p.Cantidad).ToLower()
+				.Contains(filtro.ToLower())
                     )
-                    .Select(c => c.ToResponse())
+                    .Select(p => p.ToResponse())
 					.ToListAsync();
 				return new Result<List<ProductoResponse>>()
 				{

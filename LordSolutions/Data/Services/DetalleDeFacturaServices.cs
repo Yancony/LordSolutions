@@ -1,39 +1,37 @@
-﻿using System.Linq;
-using LordSolutions.Data.Context;
+﻿using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
-using LordSolutions.Data.Resquest;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
-	public class DetalleDeFactura
+	public class Result
 	{
-		public class Result
-		{
-			public bool Success { get; set; }
-			public string? Message { get; set; }
+		public bool Success { get; set; }
+		public string? Message { get; set; }
 
-		}
-		public class Result<T>
-		{
-			public bool Success { get; set; }
-			public string? Message { get; set; }
-			public T? Data { get; set; }
+	}
+	public class Result<T>
+	{
+		public bool Success { get; set; }
+		public string? Message { get; set; }
+		public T? Data { get; set; }
 
-		}
-
+	}
+	public class DetalleDeFacturaServices
+	{
 		private readonly ILordSolutionsDbContext dbContext;
 
-		public DetalleDeFactura(ILordSolutionsDbContext dbContext)
+		public DetalleDeFacturaServices(ILordSolutionsDbContext dbContext)
 		{
 			this.dbContext = dbContext;
 		}
+
 		public async Task<Result> Crear(DetalleDeFacturaRequest request)
 		{
 			try
 			{
-				var detalledefactura = DetalleDeFactura.Crear(DetalleDeFacturaRequest);
+				var detalledefactura = DetalleDeFactura.Crear(request);
 				dbContext.DetallesDeFacturas.Add(detalledefactura);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };
@@ -48,9 +46,9 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalledefactura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var detalledefactura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
 				if (detalledefactura == null)
-					return new Result { Message = "No se encontro el Detalle de la Factura", Success = false };
+					return new Result { Message = "No se encontro ningún detalle de factura", Success = false };
 
 				if (detalledefactura.Modificar(request))
 					await dbContext.SaveChangesAsync();
@@ -67,9 +65,9 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalledefactura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var detalledefactura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
 				if (detalledefactura == null)
-					return new Result { Message = "No se encontro el Detalle de la Factura", Success = false };
+					return new Result { Message = "No se encontro ninguna factura", Success = false };
 
 				dbContext.DetallesDeFacturas.Remove(detalledefactura);
 				await dbContext.SaveChangesAsync();
@@ -85,11 +83,11 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalledefactura = await dbContext.DetallesDeFacturas.Where(c =>
-				(c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-				.Contains(filtro.ToLower))
+				var detalledefactura = await dbContext.DetallesDeFacturas.Where(d =>
+				(d.Nombre + " " + d.Telefono + " " + d.Direccion).ToLower()
+				.Contains(filtro.ToLower())
                     )
-                    .Select(c => c.ToResponse())
+                    .Select(d => d.ToResponse())
 					.ToListAsync();
 				return new Result<List<DetalleDeFacturaResponse>>()
 				{

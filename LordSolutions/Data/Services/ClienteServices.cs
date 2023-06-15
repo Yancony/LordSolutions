@@ -33,7 +33,7 @@ namespace LordSolutions.Data.Services
         {
             try
             {
-                var cliente = Cliente.Crear(ClienteRequest);
+                var cliente = Cliente.Crear(request);
                 dbContext.Clientes.Add(cliente);
                 await dbContext.SaveChangesAsync();
                 return new Result() { Message = "Ok", Success = true };
@@ -48,7 +48,7 @@ namespace LordSolutions.Data.Services
         {
             try
             {
-                var cliente = dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
+                var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (cliente == null)
                     return new Result { Message = "No se encontro el cliente", Success = false };
 
@@ -87,8 +87,7 @@ namespace LordSolutions.Data.Services
             {
                 var clientes = await dbContext.Clientes.Where(c =>
                 (c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-                .Contains(filtro.ToLower))
-                    )
+                .Contains(filtro.ToLower()))
                     .Select(c => c.ToResponse())
                     .ToListAsync();
                 return new Result<List<ClienteResponse>>()

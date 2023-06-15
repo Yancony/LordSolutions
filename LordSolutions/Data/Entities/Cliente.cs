@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using LordSolutions.Data.Request;
+using LordSolutions.Data.Resquest;
 
 namespace LordSolutions.Data.Entities
 {

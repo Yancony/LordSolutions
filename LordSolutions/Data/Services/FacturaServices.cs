@@ -31,7 +31,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var factura = Factura.Crear(FacturaRequest);
+				var factura = Factura.Crear(request);
 				dbContext.Facturas.Add(factura);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };

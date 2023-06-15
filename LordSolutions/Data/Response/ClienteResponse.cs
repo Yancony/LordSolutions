@@ -1,5 +1,6 @@
 ﻿using LordSolutions.Data.Entities;
 using System.ComponentModel.DataAnnotations;
+using LordSolutions.Data.Request;
 
 namespace LordSolutions.Data.Resquest
 {

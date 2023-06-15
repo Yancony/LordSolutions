@@ -32,8 +32,8 @@ namespace LordSolutions.Data.Services
 	{
 		try
 		{
-			var proveedor = Proveedor.Crear(ProveedorRequest);
-			dbContext.Proveedor.Add(proveedor);
+			var proveedor = Proveedor.Crear(request);
+			dbContext.Proveedores.Add(proveedor);
 			await dbContext.SaveChangesAsync();
 			return new Result() { Message = "Ok", Success = true };
 		}
@@ -47,7 +47,7 @@ namespace LordSolutions.Data.Services
 	{
 		try
 		{
-			var proveedor = dbContext.Proveedor.FirstOrDefaultAsync(c => c.Id == request.Id);
+			var proveedor = dbContext.Proveedores.FirstOrDefaultAsync(p => p.Id == request.Id);
 			if (proveedor == null)
 				return new Result { Message = "No se encontro el proveedor", Success = false };
 
@@ -66,11 +66,11 @@ namespace LordSolutions.Data.Services
 	{
 		try
 		{
-			var proveedor = dbContext.Proveedor.FirstOrDefaultAsync(c => c.Id == request.Id);
+			var proveedor = dbContext.Proveedores.FirstOrDefaultAsync(p => p.Id == request.Id);
 			if (proveedor == null)
 				return new Result { Message = "No se encontro el proveedor", Success = false };
 
-			dbContext.Proveedor.Remove(proveedor);
+			dbContext.Proveedores.Remove(proveedor);
 			await dbContext.SaveChangesAsync();
 			return new Result() { Message = "Ok", Success = true };
 		}
@@ -84,11 +84,11 @@ namespace LordSolutions.Data.Services
 	{
 		try
 		{
-			var proveedor = await dbContext.Proveedor.Where(c =>
-			(c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-			.Contains(filtro.ToLower))
+			var proveedor = await dbContext.Proveedores.Where(p =>
+			(p.Nombre + " " + p.Telefono + " " + p.CorreoElectronico).ToLower()
+			.Contains(filtro.ToLower())
                     )
-                    .Select(c => c.ToResponse())
+                    .Select(p => p.ToResponse())
 					.ToListAsync();
 			return new Result<List<ClienteResponse>>()
 			{
