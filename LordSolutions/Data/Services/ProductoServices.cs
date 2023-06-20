@@ -34,7 +34,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var producto = dbContext.Productos.FirstOrDefaultAsync(p => p.Id == request.Id);
+				var producto = await dbContext.Productos.FirstOrDefaultAsync(p => p.Id == request.Id);
 				if (producto == null)
 					return new Result { Message = "No se encontro el producto", Success = false };
 
@@ -53,7 +53,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var producto = dbContext.Productos.FirstOrDefaultAsync(p => p.IdProveedor == request.IdProveedor);
+				var producto = await dbContext.Productos.FirstOrDefaultAsync(p => p.IdProveedor == request.IdProveedor);
 				if (producto == null)
 					return new Result { Message = "No se encontro el producto", Success = false };
 

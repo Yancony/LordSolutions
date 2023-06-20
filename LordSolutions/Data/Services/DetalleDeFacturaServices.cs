@@ -1,10 +1,51 @@
 ﻿using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
+using LordSolutions.Data.Resquest;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
+	public class DetalleDeFacturaServices
+	{
+		private readonly ILordSolutionsDbContext dbContext;
+
+		public DetalleDeFacturaServices(ILordSolutionsDbContext dbContext)
+		{
+			this.dbContext = dbContext;
+		}
+
+		public async Task<Result> Crear(DetalleDeFacturaRequest request)
+		{
+			try
+			{
+				var detalle = DetalleDeFactura.Crear(request);
+				dbContext.DetallesDeFacturas.Add(detalle);
+				await dbContext.SaveChangesAsync();
+				return new Result() { Message = "Ok", Success = true };
+			}
+			catch (Exception E)
+			{
+				return new Result() { Message = E.Message, Success = false };
+
+			}
+		}
+		public async Task<Result> Modificar(DetalleDeFacturaRequest request)
+		{
+			try
+			{
+				var detalle = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
+				if (detalle == null)
+					return new Result() { Message = "No se encontro el detalle de la factura", Success = false };
+
+				if (detalle.Modificar(request))
+					await dbContext.SaveChangesAsync();
+
+				return new Result() { Message = "Ok", Success = true };
+			}
+			catch (Exception E)
+			{
+				return new Result() { Message = E.Message, Success = false };
 
 			}
 		}
@@ -12,17 +53,17 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalledefactura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
-				if (detalledefactura == null)
-					return new Result { Message = "No se encontro ninguna factura", Success = false };
+				var	detalle	 = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
+				if (detalle == null)
+					return new Result() { Message = "No se encontro el detalle de la factura", Success = false };
 
-				dbContext.DetallesDeFacturas.Remove(detalledefactura);
+				dbContext.DetallesDeFacturas.Remove(detalle);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };
 			}
 			catch (Exception E)
 			{
-				return new Result { Message = E.Message, Success = false };
+				return new Result() { Message = E.Message, Success = false };
 
 			}
 		}
@@ -30,17 +71,16 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalledefactura = await dbContext.DetallesDeFacturas.Where(d =>
-				(d.Nombre + " " + d.Telefono + " " + d.Direccion).ToLower()
-				.Contains(filtro.ToLower())
-                    )
-                    .Select(d => d.ToResponse())
+				var detalle = await dbContext.DetallesDeFacturas.Where(d =>
+				(d.IdProducto + " " + d.IdFactura + " " + d.Precio).ToLower()
+				.Contains(filtro.ToLower()))
+					.Select(c => c.ToResponse())
 					.ToListAsync();
 				return new Result<List<DetalleDeFacturaResponse>>()
 				{
 					Message = "Ok",
 					Success = true,
-					Data = detalledefactura
+					Data = detalle
 				};
 			}
 			catch (Exception E)

@@ -2,23 +2,12 @@
 using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
+using LordSolutions.Data.Resquest;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
-	public class Result
-	{
-		public bool Success { get; set; }
-		public string? Message { get; set; }
 
-	}
-	public class Result<T>
-	{
-		public bool Success { get; set; }
-		public string? Message { get; set; }
-		public T? Data { get; set; }
-
-	}
 	public class FacturaServices
 	{
 		private readonly ILordSolutionsDbContext dbContext;
@@ -46,7 +35,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var factura = dbContext.Facturas.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var factura = await dbContext.Facturas.FirstOrDefaultAsync(c => c.Id == request.Id);
 				if (factura == null)
 					return new Result { Message = "No se encontro ninguna factura", Success = false };
 
@@ -65,7 +54,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var factura = dbContext.DetallesDeFacturas.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var factura = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(c => c.Id == request.Id);
 				if (factura == null)
 					return new Result { Message = "No se encontro ninguna factura", Success = false };
 
@@ -84,8 +73,8 @@ namespace LordSolutions.Data.Services
 			try
 			{
 				var factura = await dbContext.Facturas.Where(c =>
-				(c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-				.Contains(filtro.ToLower))
+				(c.IdCliente + " " + c.Fecha).ToLower()
+				.Contains(filtro.ToLower())
                     )
                     .Select(c => c.ToResponse())
 					.ToListAsync();

@@ -16,7 +16,7 @@ namespace LordSolutions.Data.Services
     public class Result<T>
     {
         public bool Success{ get; set; }
-        public string? Message{ get; set; }
+        public string Message{ get; set; }
         public T? Data { get; set; }
 
     }
@@ -40,7 +40,7 @@ namespace LordSolutions.Data.Services
             }
             catch (Exception E)
             {
-                return new Result { Message = E.Message, Success = false };
+                return new Result() { Message = E.Message, Success = false };
 
             }
         }
@@ -50,7 +50,7 @@ namespace LordSolutions.Data.Services
             {
                 var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (cliente == null)
-                    return new Result { Message = "No se encontro el cliente", Success = false };
+                    return new Result() { Message = "No se encontro el cliente", Success = false };
 
                 if (cliente.Modificar(request))
                     await dbContext.SaveChangesAsync();
@@ -59,7 +59,7 @@ namespace LordSolutions.Data.Services
             }
             catch (Exception E)
             {
-                return new Result { Message = E.Message, Success = false };
+                return new Result() { Message = E.Message, Success = false };
 
             }
         }
@@ -67,9 +67,9 @@ namespace LordSolutions.Data.Services
         {
             try
             {
-                var cliente = dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
+                var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (cliente == null)
-                    return new Result { Message = "No se encontro el cliente", Success = false };
+                    return new Result() { Message = "No se encontro el cliente", Success = false };
 
                 dbContext.Clientes.Remove(cliente);
                 await dbContext.SaveChangesAsync();
@@ -77,7 +77,7 @@ namespace LordSolutions.Data.Services
             }
             catch (Exception E)
             {
-                return new Result { Message = E.Message, Success = false };
+                return new Result() { Message = E.Message, Success = false };
 
             }
         }
