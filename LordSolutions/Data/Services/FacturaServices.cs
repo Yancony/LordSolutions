@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LordSolutions.Data.Services
 {
 
-	public class FacturaServices
+	public class FacturaServices : IFacturaServices
 	{
 		private readonly ILordSolutionsDbContext dbContext;
 
@@ -75,8 +75,8 @@ namespace LordSolutions.Data.Services
 				var factura = await dbContext.Facturas.Where(c =>
 				(c.IdCliente + " " + c.Fecha).ToLower()
 				.Contains(filtro.ToLower())
-                    )
-                    .Select(c => c.ToResponse())
+					)
+					.Select(c => c.ToResponse())
 					.ToListAsync();
 				return new Result<List<FacturaResponse>>()
 				{

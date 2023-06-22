@@ -13,6 +13,9 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<LordSolutionsDbContext>();
 builder.Services.AddScoped<ILordSolutionsDbContext, LordSolutionsDbContext>();
 builder.Services.AddScoped<IClienteServices, ClienteServices>();
+builder.Services.AddScoped<IFacturaServices, FacturaServices>();
+builder.Services.AddScoped<IProductoServices, ProductoServices>();
+builder.Services.AddScoped<IProveedorServices, ProveedorServices>();
 
 var app = builder.Build();
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
-	public class ProveedorServices
+	public class ProveedorServices : IProveedorServices
 	{
 		private readonly ILordSolutionsDbContext dbContext;
 
@@ -93,5 +93,5 @@ namespace LordSolutions.Data.Services
 			}
 		}
 	}
-	
+
 }

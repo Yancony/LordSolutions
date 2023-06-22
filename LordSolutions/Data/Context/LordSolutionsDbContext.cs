@@ -6,7 +6,7 @@ namespace LordSolutions.Data.Context
     public interface ILordSolutionsDbContext
     {
         DbSet<Cliente> Clientes { get; set; }
-        DbSet<Cliente> DetallesDeFacturas { get; set; }
+        DbSet<DetalleDeFactura> DetallesDeFacturas { get; set; }
         DbSet<Factura> Facturas { get; set; }
         DbSet<Producto> Productos { get; set; }
         DbSet<Proveedor> Proveedores { get; set; }
@@ -25,7 +25,7 @@ namespace LordSolutions.Data.Context
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Proveedor> Proveedores { get; set; }
         public DbSet<Factura> Facturas { get; set; }
-        public DbSet<Cliente> DetallesDeFacturas { get; set; }
+        public DbSet<DetalleDeFactura> DetallesDeFacturas { get; set; }
         public DbSet<Producto> Productos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

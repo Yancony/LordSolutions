@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
-	public class ProductoServices
+	public class ProductoServices : IProductoServices
 	{
 		private readonly ILordSolutionsDbContext dbContext;
 
@@ -74,8 +74,8 @@ namespace LordSolutions.Data.Services
 				var productos = await dbContext.Productos.Where(p =>
 				(p.Nombre + " " + p.Precio + " " + p.Cantidad).ToLower()
 				.Contains(filtro.ToLower())
-                    )
-                    .Select(p => p.ToResponse())
+					)
+					.Select(p => p.ToResponse())
 					.ToListAsync();
 				return new Result<List<ProductoResponse>>()
 				{

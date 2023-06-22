@@ -1,4 +1,5 @@
-﻿using LordSolutions.Data.Context;
+﻿using System.Diagnostics.Contracts;
+using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
 using LordSolutions.Data.Resquest;
@@ -19,15 +20,15 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalle = DetalleDeFactura.Crear(request);
+				var detalle = DetalleDeFacturas.Crear(request);
 				dbContext.DetallesDeFacturas.Add(detalle);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };
 			}
 			catch (Exception E)
 			{
-				return new Result() { Message = E.Message, Success = false };
 
+				return new Result() { Message = E.Message, Success = false };
 			}
 		}
 		public async Task<Result> Modificar(DetalleDeFacturaRequest request)
