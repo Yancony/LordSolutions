@@ -54,9 +54,9 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var factura = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(c => c.Id == request.Id);
+				var factura = await dbContext.Facturas.FirstOrDefaultAsync(c => c.Id == request.Id);
 				if (factura == null)
-					return new Result { Message = "No se encontro ninguna factura", Success = false };
+					return new Result() { Message = "No se encontro ninguna factura", Success = false };
 
 				dbContext.Facturas.Remove(factura);
 				await dbContext.SaveChangesAsync();
@@ -64,7 +64,7 @@ namespace LordSolutions.Data.Services
 			}
 			catch (Exception E)
 			{
-				return new Result { Message = E.Message, Success = false };
+				return new Result() { Message = E.Message, Success = false };
 
 			}
 		}

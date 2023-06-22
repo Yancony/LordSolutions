@@ -72,9 +72,9 @@ namespace LordSolutions.Data.Services
 			try
 			{
 				var detalle = await dbContext.DetallesDeFacturas.Where(d =>
-				(d.IdProducto + " " + d.IdFactura + " " + d.Precio).ToLower()
+				(d.IdProducto + " " + d.IdFactura + " " + d.Cantidad " " + d.Precio).ToLower()
 				.Contains(filtro.ToLower()))
-					.Select(c => c.ToResponse())
+					.Select(d => d.ToResponse())
 					.ToListAsync();
 				return new Result<List<DetalleDeFacturaResponse>>()
 				{
