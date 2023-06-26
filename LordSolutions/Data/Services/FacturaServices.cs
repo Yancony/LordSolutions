@@ -2,7 +2,7 @@
 using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
-using LordSolutions.Data.Resquest;
+using LordSolutions.Data.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services

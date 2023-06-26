@@ -2,7 +2,7 @@
 using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
-using LordSolutions.Data.Resquest;
+using LordSolutions.Data.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
@@ -20,91 +20,91 @@ namespace LordSolutions.Data.Services
         public T? Data { get; set; }
 
     }
-    public class ClienteServices : IClienteServices
-    {
-        private readonly ILordSolutionsDbContext dbContext;
+	public class ClienteServices : IClienteServices
+	{
+		private readonly ILordSolutionsDbContext dbContext;
 
-        public ClienteServices(ILordSolutionsDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
+		public ClienteServices(ILordSolutionsDbContext dbContext)
+		{
+			this.dbContext = dbContext;
+		}
 
-        public async Task<Result> Crear(ClienteRequest request)
-        {
-            try
-            {
-                var cliente = Cliente.Crear(request);
-                dbContext.Clientes.Add(cliente);
-                await dbContext.SaveChangesAsync();
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
-                return new Result() { Message = E.Message, Success = false };
+		public async Task<Result> Crear(ClienteRequest request)
+		{
+			try
+			{
+				var cliente = Cliente.Crear(request);
+				dbContext.Clientes.Add(cliente);
+				await dbContext.SaveChangesAsync();
+				return new Result() { Message = "Ok", Success = true };
+			}
+			catch (Exception E)
+			{
+				return new Result() { Message = E.Message, Success = false };
 
-            }
-        }
-        public async Task<Result> Modificar(ClienteRequest request)
-        {
-            try
-            {
-                var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
-                if (cliente == null)
-                    return new Result() { Message = "No se encontro el cliente", Success = false };
+			}
+		}
+		public async Task<Result> Modificar(ClienteRequest request)
+		{
+			try
+			{
+				var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
+				if (cliente == null)
+					return new Result() { Message = "No se encontro el cliente", Success = false };
 
-                if (cliente.Modificar(request))
-                    await dbContext.SaveChangesAsync();
+				if (cliente.Modificar(request))
+					await dbContext.SaveChangesAsync();
 
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
-                return new Result() { Message = E.Message, Success = false };
+				return new Result() { Message = "Ok", Success = true };
+			}
+			catch (Exception E)
+			{
+				return new Result() { Message = E.Message, Success = false };
 
-            }
-        }
-        public async Task<Result> Eliminar(ClienteRequest request)
-        {
-            try
-            {
-                var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
-                if (cliente == null)
-                    return new Result() { Message = "No se encontro el cliente", Success = false };
+			}
+		}
+		public async Task<Result> Eliminar(ClienteRequest request)
+		{
+			try
+			{
+				var cliente = await dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == request.Id);
+				if (cliente == null)
+					return new Result() { Message = "No se encontro el cliente", Success = false };
 
-                dbContext.Clientes.Remove(cliente);
-                await dbContext.SaveChangesAsync();
-                return new Result() { Message = "Ok", Success = true };
-            }
-            catch (Exception E)
-            {
-                return new Result() { Message = E.Message, Success = false };
+				dbContext.Clientes.Remove(cliente);
+				await dbContext.SaveChangesAsync();
+				return new Result() { Message = "Ok", Success = true };
+			}
+			catch (Exception E)
+			{
+				return new Result() { Message = E.Message, Success = false };
 
-            }
-        }
-        public async Task<Result<List<ClienteResponse>>> Consultar(string filtro)
-        {
-            try
-            {
-                var clientes = await dbContext.Clientes.Where(c =>
-                (c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
-                .Contains(filtro.ToLower()))
-                    .Select(c => c.ToResponse())
-                    .ToListAsync();
-                return new Result<List<ClienteResponse>>()
-                {
-                    Message = "Ok",
-                    Success = true,
-                    Data = clientes
-                };
-            }
-            catch (Exception E)
-            {
-                return new Result<List<ClienteResponse>>
-                {
-                    Message = E.Message,
-                    Success = false
-                };
-            }
-        }
-    }
+			}
+		}
+		public async Task<Result<List<ClienteResponse>>> Consultar(string filtro)
+		{
+			try
+			{
+				var clientes = await dbContext.Clientes.Where(c =>
+				(c.Nombre + " " + c.Telefono + " " + c.Direccion).ToLower()
+				.Contains(filtro.ToLower()))
+					.Select(c => c.ToResponse())
+					.ToListAsync();
+				return new Result<List<ClienteResponse>>()
+				{
+					Message = "Ok",
+					Success = true,
+					Data = clientes
+				};
+			}
+			catch (Exception E)
+			{
+				return new Result<List<ClienteResponse>>
+				{
+					Message = E.Message,
+					Success = false
+				};
+			}
+		}
+	}
 }

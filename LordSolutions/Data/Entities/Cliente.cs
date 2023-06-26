@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using LordSolutions.Data.Request;
-using LordSolutions.Data.Resquest;
+using LordSolutions.Data.Response;
 
 namespace LordSolutions.Data.Entities
 {

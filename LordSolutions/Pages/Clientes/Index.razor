@@ -1,0 +1,91 @@
+﻿@page "/clientes"
+<h3>Clientes</h3>
+<div class="container">
+	@if(ShowForm)
+	{
+		<EditForm Model="request" OnValidSubmit="Send">
+			<div class="mb-3">
+				<label>Nombre</label>
+				<InputText @bind-Value="@request.Nombre"></InputText>
+			</div>
+			<div class="mb-3">
+				<label>Telefono</label>
+				<InputText @bind-Value="@request.Telefono"></InputText>
+			</div>
+			<div class="mb-3">
+				<label>Direccion</label>
+				<InputText @bind-Value="@request.Direccion"></InputText>
+			</div>
+		</EditForm>
+		<br/>
+	}
+	@foreach (var cliente in Clientes)
+	{
+		<div class="card"style="width:18rem;">
+			<div class="card-body">
+				<label class="card-title">@cliente.Nombre</label>
+				<div class="card-text">
+					<label><b>Telefeno:</b> @cliente.Telefono</label>
+				</div>
+				<button class="btn btn-warning">Editar</button>
+				<button class="btn btn-danger">Eliminar</button>
+			</div>
+		</div>
+	}
+</div>
+
+@code {
+	public bool ShowForm { get; set; } = false;
+	public string Filtro { get; set; } = "";
+	public List<ClienteResponse> Clientes { get; set; }
+		= new List<ClienteResponse>();
+
+	public ClienteRequest request { get; set; } = new ClienteRequest;
+
+	async Task CargarClientes()
+	{
+		var resultado =
+		await clienteServices.Consultar(Filtro);
+		if (resultado.Success)
+		{
+			Clientes = resultado.Data!;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await CargarClientes();
+	}
+
+	public async Task Send()
+	{
+		if(request.Id == 0)
+		{
+			//Debo regristrar el cliente
+			var r = await clienteServices.Crear(request);
+			if(r.Success)
+			{
+				await CargarClientes();
+				StateHasChanged();
+			}
+		}
+		else
+		{
+			//Debo solicitar modificar el cliente...
+			var r = await clienteServices.Modificar(request);
+			if (r.Success)
+			{
+				await CargarClientes();
+				StateHasChanged();
+			}
+		}
+	}
+	public void Seleccionar(int Id, bool showForm = true)
+	{
+		ShowForm = showForm;
+		request = Clientes
+		.Where(c => c.Id == Id)
+		.Select(c => c.ToRequest())
+		.FirstOrDefault()??new ClienteRequest();
+	}
+}

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using LordSolutions.Data.Request;
 
-namespace LordSolutions.Data.Resquest
+namespace LordSolutions.Data.Response
 {
     public class ClienteResponse
     {
@@ -15,5 +15,14 @@ namespace LordSolutions.Data.Resquest
         public string Direccion { get; set; } = null;
 
         public List<FacturaRequest> Facturas { get; set; }
+        public ClienteRequest ToRequest() {
+            return new ClienteRequest
+            {
+                Id = Id,
+                Nombre = Nombre,
+                Telefono = Telefono,
+                Direccion = Direccion
+            };
+        }
     }
 }

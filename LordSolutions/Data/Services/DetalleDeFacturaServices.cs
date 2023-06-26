@@ -2,12 +2,12 @@
 using LordSolutions.Data.Context;
 using LordSolutions.Data.Entities;
 using LordSolutions.Data.Request;
-using LordSolutions.Data.Resquest;
+using LordSolutions.Data.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace LordSolutions.Data.Services
 {
-	public class DetalleDeFacturaServices
+	public class DetalleDeFacturaServices : IDetalleDeFacturaServices
 	{
 		private readonly ILordSolutionsDbContext dbContext;
 
@@ -54,7 +54,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var	detalle	 = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
+				var detalle = await dbContext.DetallesDeFacturas.FirstOrDefaultAsync(d => d.Id == request.Id);
 				if (detalle == null)
 					return new Result() { Message = "No se encontro el detalle de la factura", Success = false };
 
