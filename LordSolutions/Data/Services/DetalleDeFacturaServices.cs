@@ -20,7 +20,7 @@ namespace LordSolutions.Data.Services
 		{
 			try
 			{
-				var detalle = DetalleDeFacturas.Crear(request);
+				var detalle = DetalleDeFactura.Crear(request);
 				dbContext.DetallesDeFacturas.Add(detalle);
 				await dbContext.SaveChangesAsync();
 				return new Result() { Message = "Ok", Success = true };
@@ -73,7 +73,7 @@ namespace LordSolutions.Data.Services
 			try
 			{
 				var detalle = await dbContext.DetallesDeFacturas.Where(d =>
-				(d.IdProducto + " " + d.IdFactura + " " + d.Cantidad " " + d.Precio).ToLower()
+				(d.IdProducto + " " + d.IdFactura + " " + d.Cantidad + " " + d.Precio).ToLower()
 				.Contains(filtro.ToLower()))
 					.Select(d => d.ToResponse())
 					.ToListAsync();

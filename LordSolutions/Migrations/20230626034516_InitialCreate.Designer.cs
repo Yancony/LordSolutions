@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LordSolutions.Migrations
 {
     [DbContext(typeof(LordSolutionsDbContext))]
-    [Migration("20230527202306_InitialCreate")]
+    [Migration("20230626034516_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,15 +37,25 @@ namespace LordSolutions.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("FacturaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProductoId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Telefono")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FacturaId");
+
+                    b.HasIndex("ProductoId");
 
                     b.ToTable("Clientes");
                 });
@@ -93,9 +103,6 @@ namespace LordSolutions.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -104,7 +111,7 @@ namespace LordSolutions.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("IdCliente");
 
                     b.ToTable("Facturas");
                 });
@@ -160,16 +167,27 @@ namespace LordSolutions.Migrations
                     b.ToTable("Proveedores");
                 });
 
+            modelBuilder.Entity("LordSolutions.Data.Entities.Cliente", b =>
+                {
+                    b.HasOne("LordSolutions.Data.Entities.Factura", null)
+                        .WithMany("DetallesDeFactura")
+                        .HasForeignKey("FacturaId");
+
+                    b.HasOne("LordSolutions.Data.Entities.Producto", null)
+                        .WithMany("DetallesDeFactura")
+                        .HasForeignKey("ProductoId");
+                });
+
             modelBuilder.Entity("LordSolutions.Data.Entities.DetalleDeFactura", b =>
                 {
                     b.HasOne("LordSolutions.Data.Entities.Factura", "Factura")
-                        .WithMany("DetallesDeFactura")
+                        .WithMany()
                         .HasForeignKey("FacturaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LordSolutions.Data.Entities.Producto", "Producto")
-                        .WithMany("DetallesDeFactura")
+                        .WithMany()
                         .HasForeignKey("ProductoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -182,8 +200,8 @@ namespace LordSolutions.Migrations
             modelBuilder.Entity("LordSolutions.Data.Entities.Factura", b =>
                 {
                     b.HasOne("LordSolutions.Data.Entities.Cliente", "Cliente")
-                        .WithMany("Facturas")
-                        .HasForeignKey("ClienteId")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -199,11 +217,6 @@ namespace LordSolutions.Migrations
                         .IsRequired();
 
                     b.Navigation("Proveedor");
-                });
-
-            modelBuilder.Entity("LordSolutions.Data.Entities.Cliente", b =>
-                {
-                    b.Navigation("Facturas");
                 });
 
             modelBuilder.Entity("LordSolutions.Data.Entities.Factura", b =>

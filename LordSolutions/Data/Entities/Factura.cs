@@ -8,8 +8,8 @@ namespace LordSolutions.Data.Entities
     {
         public Factura()
         {
-            Cliente = new DetalleDeFactura();
-            DetallesDeFactura = new List<Cliente>();
+            //Cliente = new Cliente();
+            //DetallesDeFactura = new List<DetalleDeFactura>();
         }
         [Key]
         public int Id { get; set; }
