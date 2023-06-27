@@ -1,46 +1,80 @@
 ﻿@page "/clientes"
-<h3>Clientes</h3>
+
+@if (!ShowForm)
+{
+	<h3>Clientes (@Clientes.Count)</h3>
+	<div class="mb-2">
+		<button class="btn btn-success"
+			@onclick="()=>{ShowForm = !ShowForm;}">
+			Agregar
+		</button>
+	</div>
+}
+
 <div class="container">
 	@if(ShowForm)
 	{
+		<h3>@Tituloform</h3>
 		<EditForm Model="request" OnValidSubmit="Send">
-			<div class="mb-3">
-				<label>Nombre</label>
-				<InputText @bind-Value="@request.Nombre"></InputText>
+			<div class="mb-3 input-group">
+				<label class="input-group-text">Nombre</label>
+				<InputText class="form-control" @bind-Value="@request.Nombre"></InputText>
 			</div>
-			<div class="mb-3">
-				<label>Telefono</label>
-				<InputText @bind-Value="@request.Telefono"></InputText>
+			<div class="mb-3 input-group">
+				<label class="input-group-text">Telefono</label>
+				<InputText class="form-control" @bind-Value="@request.Telefono"></InputText>
 			</div>
-			<div class="mb-3">
-				<label>Direccion</label>
-				<InputText @bind-Value="@request.Direccion"></InputText>
+			<div class="mb-3 input-group">
+				<label class="input-group-text">Direccion</label>
+				<InputText class="form-control" @bind-Value="@request.Direccion"></InputText>
+			</div>
+			<div class="btn-group">
+				<button type="submit" class="btn btn-outline-success">Guardar</button>
+				<button @onclick="Cancelar" class="btn btn-outline-danger">Cancelar</button>
 			</div>
 		</EditForm>
 		<br/>
 	}
-	@foreach (var cliente in Clientes)
+	else
 	{
-		<div class="card"style="width:18rem;">
-			<div class="card-body">
-				<label class="card-title">@cliente.Nombre</label>
-				<div class="card-text">
-					<label><b>Telefeno:</b> @cliente.Telefono</label>
+		@foreach (var cliente in Clientes)
+		{
+			<div class="card" style="width:18rem;">
+				<div class="card-body">
+					<label class="card-title">@cliente.Nombre</label>
+					<div class="card-text">
+						<label><b>Telefeno:</b> @cliente.Telefono</label>
+					</div>
+					<button @onclick="()=>Seleccionar(cliente.Id)"
+					class="btn btn-warning">
+						Editar
+					</button>
+					<button @onclick="()=>Eliminar(cliente)"
+					class="btn btn-danger">
+						Eliminar
+					</button>
 				</div>
-				<button class="btn btn-warning">Editar</button>
-				<button class="btn btn-danger">Eliminar</button>
 			</div>
-		</div>
+		}
 	}
 </div>
 
 @code {
+	public string Tituloform => request.Id == 0 ? 
+	"Agregar cliente" : "Modificar cliente";
+
 	public bool ShowForm { get; set; } = false;
 	public string Filtro { get; set; } = "";
 	public List<ClienteResponse> Clientes { get; set; }
 		= new List<ClienteResponse>();
 
-	public ClienteRequest request { get; set; } = new ClienteRequest;
+	public ClienteRequest request { get; set; } = new ClienteRequest();
+
+	void Cancelar()
+	{
+		request = new ClienteRequest();
+		ShowForm = false;
+	}
 
 	async Task CargarClientes()
 	{
@@ -65,6 +99,7 @@
 			var r = await clienteServices.Crear(request);
 			if(r.Success)
 			{
+				Cancelar();
 				await CargarClientes();
 				StateHasChanged();
 			}
@@ -75,17 +110,27 @@
 			var r = await clienteServices.Modificar(request);
 			if (r.Success)
 			{
+				Cancelar();
 				await CargarClientes();
 				StateHasChanged();
 			}
 		}
 	}
-	public void Seleccionar(int Id, bool showForm = true)
+	public void Seleccionar(int Id)
 	{
-		ShowForm = showForm;
+		ShowForm = true;
 		request = Clientes
 		.Where(c => c.Id == Id)
 		.Select(c => c.ToRequest())
 		.FirstOrDefault()??new ClienteRequest();
+	}
+	public async Task Eliminar(ClienteResponse cliente)
+	{
+		var resultado = await clienteServices.Eliminar(cliente.ToRequest());
+		if (resultado.Success)
+		{
+			await CargarClientes();
+			StateHasChanged();
+		}
 	}
 }
