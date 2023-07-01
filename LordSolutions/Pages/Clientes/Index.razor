@@ -4,7 +4,7 @@
 {
 	<h3>Clientes (@Clientes.Count)</h3>
 	<div class="mb-2">
-		<button class="btn btn-success"
+		<button class="btn btn-success btn-sm"
 			@onclick="()=>{ShowForm = !ShowForm;}">
 			Agregar
 		</button>
@@ -16,21 +16,21 @@
 	{
 		<h3>@Tituloform</h3>
 		<EditForm Model="request" OnValidSubmit="Send">
-			<div class="mb-3 input-group">
-				<label class="input-group-text">Nombre</label>
-				<InputText class="form-control" @bind-Value="@request.Nombre"></InputText>
+			<div class="mb-3">
+				<label class="form-label">Nombre</label>
+				<InputText class="card" @bind-Value="@request.Nombre"></InputText>
 			</div>
-			<div class="mb-3 input-group">
-				<label class="input-group-text">Telefono</label>
-				<InputText class="form-control" @bind-Value="@request.Telefono"></InputText>
+			<div class="mb-3">
+				<label class="form-label">Telefono</label>
+				<InputText class="card" @bind-Value="@request.Telefono"></InputText>
 			</div>
-			<div class="mb-3 input-group">
-				<label class="input-group-text">Direccion</label>
-				<InputText class="form-control" @bind-Value="@request.Direccion"></InputText>
+			<div class="mb-3">
+				<label class="form-label">Direccion</label>
+				<InputText class="card" @bind-Value="@request.Direccion"></InputText>
 			</div>
 			<div class="btn-group">
-				<button type="submit" class="btn btn-outline-success">Guardar</button>
-				<button @onclick="Cancelar" class="btn btn-outline-danger">Cancelar</button>
+				<button type="submit" class="btn btn-outline-success btn-sm">Guardar</button>
+				<button @onclick="Cancelar" class="btn btn-outline-danger btn-sm">Cancelar</button>
 			</div>
 		</EditForm>
 		<br/>
@@ -41,16 +41,21 @@
 		{
 			<div class="card" style="width:18rem;">
 				<div class="card-body">
-					<label class="card-title">@cliente.Nombre</label>
+					<div class="card-text">
+						<label><b>Nombre:</b> @cliente.Nombre</label>
+					</div>
 					<div class="card-text">
 						<label><b>Telefeno:</b> @cliente.Telefono</label>
 					</div>
+					<div class="card-text">
+						<label><b>Direccion:</b> @cliente.Direccion</label>
+					</div>
 					<button @onclick="()=>Seleccionar(cliente.Id)"
-					class="btn btn-warning">
+					class="btn btn-warning btn-sm">
 						Editar
 					</button>
 					<button @onclick="()=>Eliminar(cliente)"
-					class="btn btn-danger">
+					class="btn btn-danger btn-sm">
 						Eliminar
 					</button>
 				</div>

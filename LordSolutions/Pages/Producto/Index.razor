@@ -1,0 +1,164 @@
+﻿@page "/productos"
+
+@inject IProductoServices productoServices
+@inject IJSRuntime JS
+
+<h3>Productos</h3>
+
+<h4>Agregar Producto</h4>
+<div>
+    <input type="text" @bind="@nuevoProducto.Nombre" placeholder="Nombre del producto" />
+    <input type="number" @bind="@nuevoProducto.Precio" placeholder="Precio" />
+    <input type="number" @bind="@nuevoProducto.Cantidad" placeholder="Cantidad" />
+    <button class="btn btn-success btn-sm" @onclick="AgregarModificarProducto">Agregar</button>
+</div>
+
+
+<h4>Listado de Productos</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (productos != null)
+        {
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Precio</td>
+                    <td>@producto.Cantidad</td>
+                    <td>
+                        <button @onclick="() => EditarProducto(producto)">Editar</button>
+                        <button @onclick="() => EliminarProducto(producto)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <p>No hay productos disponibles.</p>
+        }
+    </tbody>
+</table>
+
+@if (editarProducto != null)
+{
+    <h4>Editar Producto</h4>
+    <div>
+        <input type="text" @bind="@editarProducto.Nombre" />
+        <input type="number" @bind="@editarProducto.Precio" />
+        <input type="number" @bind="@editarProducto.Cantidad" />
+        <button @onclick="AgregarModificarProducto">Guardar</button>
+        <button @onclick="CancelarEdicion">Cancelar</button>
+    </div>
+}
+
+@code {
+    private List<ProductoResponse> productos;
+    private ProductoRequest nuevoProducto = new ProductoRequest();
+    private ProductoRequest editarProducto;
+    private ProductoRequest productoSeleccionado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProductos();
+    }
+
+    private async Task CargarProductos()
+    {
+        var resultado = await productoServices.Consultar("");
+        if (resultado.Success)
+        {
+            productos = resultado.Data;
+        }
+        else
+        {
+            MostrarMensajeError(resultado.Message);
+        }
+    }
+
+
+    private async Task AgregarModificarProducto()
+    {
+        if (editarProducto == null)
+        {
+            var resultado = await productoServices.Crear(nuevoProducto);
+            if (resultado.Success)
+            {
+                await CargarProductos();
+                nuevoProducto = new ProductoRequest();
+            }
+            else
+            {
+                MostrarMensajeError(resultado.Message);
+            }
+        }
+        else
+        {
+            var resultado = await productoServices.Modificar(editarProducto);
+            if (resultado.Success)
+            {
+                await CargarProductos();
+                editarProducto = null;
+            }
+            else
+            {
+                MostrarMensajeError(resultado.Message);
+            }
+        }
+    }
+
+    private void EditarProducto(ProductoResponse producto)
+    {
+        editarProducto = new ProductoRequest
+            {
+                Id = producto.Id,
+                Nombre = producto.Nombre,
+                Precio = producto.Precio,
+                Cantidad = producto.Cantidad
+            };
+    }
+
+    private void CancelarEdicion()
+    {
+        editarProducto = null;
+    }
+
+    private async Task EliminarProducto(ProductoResponse producto)
+    {
+        var confirmar = await JS.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar el producto {producto.Nombre}?");
+
+        if (confirmar)
+        {
+            productoSeleccionado = new ProductoRequest
+                {
+                    Id = producto.Id,
+                    Nombre = producto.Nombre,
+                    Precio = producto.Precio,
+                    Cantidad = producto.Cantidad
+                };
+
+            var resultado = await productoServices.Eliminar(productoSeleccionado);
+            if (resultado.Success)
+            {
+                await CargarProductos();
+            }
+            else
+            {
+                MostrarMensajeError(resultado.Message);
+            }
+        }
+    }
+
+    private void MostrarMensajeError(string mensaje)
+    {
+        // Implementa tu lógica para mostrar el mensaje de error
+    }
+}
+
+

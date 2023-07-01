@@ -94,5 +94,22 @@ namespace LordSolutions.Data.Services
 				};
 			}
 		}
-	}
+        public async Task<Result<FacturaResponse>> ObtenerFactura(int id)
+        {
+            try
+            {
+                var factura = await dbContext.Facturas.FirstOrDefaultAsync(c => c.Id == id);
+                if (factura == null)
+                    return new Result<FacturaResponse> { Message = "No se encontró la factura", Success = false };
+
+                var facturaResponse = factura.ToResponse();
+                return new Result<FacturaResponse> { Message = "Ok", Success = true, Data = facturaResponse };
+            }
+            catch (Exception E)
+            {
+                return new Result<FacturaResponse> { Message = E.Message, Success = false };
+            }
+        }
+
+    }
 }

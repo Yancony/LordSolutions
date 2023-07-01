@@ -9,5 +9,6 @@ namespace LordSolutions.Data.Services
 		Task<Result> Crear(FacturaRequest request);
 		Task<Result> Eliminar(FacturaRequest request);
 		Task<Result> Modificar(FacturaRequest request);
-	}
+        Task<Result<FacturaResponse>> ObtenerFactura(int id);
+    }
 }

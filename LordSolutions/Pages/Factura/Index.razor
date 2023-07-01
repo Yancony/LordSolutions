@@ -1,0 +1,181 @@
+﻿@page "/facturas"
+
+@inject IFacturaServices facturaServices
+@inject IJSRuntime JS
+
+<h3>Factura (@facturas?.Count)</h3>
+
+<div>
+    <input type="text" @bind="@filtro" placeholder="Filtrar por cliente o fecha" />
+    <button class="btn btn-success btn-sm" @onclick="ConsultarFacturas">Consultar</button>
+</div>
+
+@if (!mostrarFormulario)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (facturas != null)
+            {
+                @foreach (var factura in facturas)
+                {
+                    <tr>
+                        <td>@factura.Id</td>
+                        <td>@factura.IdCliente</td>
+                        <td>@factura.Fecha.ToShortDateString()</td>
+                        <td>
+                            <button @onclick="() => EditarFactura(factura.Id)">Editar</button>
+                            <button @onclick="() => EliminarFactura(factura.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }       }
+            else
+            {
+                <p>No hay facturas disponibles.</p>
+            }
+
+        </tbody>
+    </table>
+}
+
+@if (mostrarFormulario)
+{
+    <h4>@tituloFormulario</h4>
+
+    <div>
+        <label>ID:</label>
+        <input type="number" @bind="@factura.Id" disabled="@accionFormulario == AccionFormulario.Editar" />
+
+        <label>ID Cliente:</label>
+        <input type="number" @bind="@factura.IdCliente" />
+
+        <label>Fecha:</label>
+        <input type="date" @bind="@factura.Fecha" />
+
+        <button @onclick="GuardarFactura">Guardar</button>
+        <button @onclick="CancelarEdicion">Cancelar</button>
+    </div>
+}
+
+@code {
+    private enum AccionFormulario
+    {
+        Ninguno,
+        Crear,
+        Editar
+    }
+
+    private List<FacturaResponse> facturas;
+    private string filtro;
+    private FacturaRequest factura;
+    private AccionFormulario accionFormulario;
+    private bool mostrarFormulario;
+    private string tituloFormulario;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConsultarFacturas();
+    }
+
+    private async Task ConsultarFacturas()
+    {
+        var resultado = await facturaServices.Consultar(filtro);
+        if (resultado.Success)
+        {
+            facturas = resultado.Data;
+        }
+        else
+        {
+            //error al consultar facturas
+        }
+    }
+
+    private void NuevaFactura()
+    {
+        factura = new FacturaRequest();
+        accionFormulario = AccionFormulario.Crear;
+        mostrarFormulario = true;
+        tituloFormulario = "Nueva Factura";
+    }
+
+    private async Task EditarFactura(int id)
+    {
+        var resultado = await facturaServices.ObtenerFactura(id);
+        if (resultado.Success)
+        {
+            var facturaResponse = resultado.Data;
+            factura = new FacturaRequest
+                {
+                    Id = facturaResponse.Id,
+                    IdCliente = facturaResponse.IdCliente,
+                    Fecha = facturaResponse.Fecha,
+                    Cliente = facturaResponse.Cliente,
+                    DetallesDeFactura = facturaResponse.DetallesDeFactura,
+                };
+            accionFormulario = AccionFormulario.Editar;
+            mostrarFormulario = true;
+            tituloFormulario = "Editar Factura";
+        }
+        else
+        {
+            //error al obtener factura para editar
+        }
+    }
+    
+    private async Task GuardarFactura()
+    {
+        Result resultado;
+        if (accionFormulario == AccionFormulario.Crear)
+        {
+            resultado = await facturaServices.Crear(factura);
+        }
+        else
+        {
+            resultado = await facturaServices.Modificar(factura);
+        }
+
+        if (resultado.Success)
+        {
+            await ConsultarFacturas();
+            CancelarEdicion();
+        }
+        else
+        {
+            //error al guardar factura
+        }
+    }
+
+    private async Task EliminarFactura(int id)
+    {
+        var confirmar = await JS.InvokeAsync<bool>("confirm", $"¿Estás seguro de eliminar la factura {id}?");
+
+        if (confirmar)
+        {
+            var facturaRequest = new FacturaRequest { Id = id };
+            var resultado = await facturaServices.Eliminar(facturaRequest);
+            if (resultado.Success)
+            {
+                await ConsultarFacturas();
+            }
+            else
+            {
+                //error al eliminar factura
+            }
+        }
+    }
+
+    private void CancelarEdicion()
+    {
+        factura = null;
+        accionFormulario = AccionFormulario.Ninguno;
+        mostrarFormulario = false;
+        tituloFormulario = string.Empty;
+    }
+}
+

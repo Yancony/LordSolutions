@@ -1,0 +1,120 @@
+﻿@page "/proveedores"
+
+@using LordSolutions.Data.Request
+@using LordSolutions.Data.Response
+
+<h3>Proveedores</h3>
+
+
+<h4>Agregar Proveedor</h4>
+<form @onsubmit="CrearProveedor">
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="card" id="nombre" @bind="nuevoProveedor.Nombre" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input type="text" class="card" id="telefono" @bind="nuevoProveedor.Telefono" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="card" id="correo" @bind="nuevoProveedor.CorreoElectronico" />
+    </div>
+    <button class="btn btn-success btn-sm">Guardar</button>
+</form>
+
+<h4>Listado de Proveedores</h4>
+<div>
+    <input class="form" @bind="filtro" placeholder="Filtrar por nombre, teléfono o correo electrónico" />
+    <button button type="button" class="btn btn-primary btn-sm" @onclick="ConsultarProveedores">Buscar</button>
+</div>
+<ul>
+    @foreach (var proveedor in proveedores)
+    {
+        <ul class="list-group list-group-horizontal-sm">
+            <li class="list-group-item">@proveedor.Nombre</li>
+            <li class="list-group-item">@proveedor.Telefono</li>
+            <li class="list-group-item">@proveedor.CorreoElectronico</li>
+            <li class="list-group-item">
+                <button type="button" class="btn btn-warning" @onclick="() => EditarProveedor(proveedor.Id)">Editar</button>
+                <button type="button" class="btn btn-danger" @onclick="() => EliminarProveedor(proveedor.Id)">Eliminar</button>
+            </li>
+        </ul>
+    }
+</ul>
+
+@code {
+    private ProveedorResponse proveedorSeleccionado;
+    private List<ProveedorResponse> proveedores = new List<ProveedorResponse>();
+    private ProveedorRequest nuevoProveedor = new ProveedorRequest();
+    private string filtro = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConsultarProveedores();
+    }
+    private void EditarProveedor(ProveedorResponse proveedor)
+    {
+        proveedorSeleccionado = proveedor;
+    }
+
+
+    private async Task ConsultarProveedores()
+    {
+        var resultado = await proveedorServices.Consultar(filtro);
+        if (resultado.Success)
+        {
+            proveedores = resultado.Data;
+        }
+        else
+        {
+            //error de consulta
+        }
+    }
+
+    private async Task CrearProveedor()
+    {
+        var resultado = await proveedorServices.Crear(nuevoProveedor);
+        if (resultado.Success)
+        {
+            await ConsultarProveedores();
+            nuevoProveedor = new ProveedorRequest();
+        }
+        else
+        {
+            //error de creación
+        }
+    }
+
+    private async Task EliminarProveedor(int proveedorId)
+    {
+        if (await MostrarConfirmacion("¿Estás seguro de eliminar este proveedor?"))
+        {
+            var resultado = await proveedorServices.Eliminar(new ProveedorRequest { Id = proveedorId });
+            if (resultado.Success)
+            {
+                await ConsultarProveedores();
+            }
+            else
+            {
+                //error de eliminación
+            }
+        }
+    }
+
+    private async Task EditarProveedor(int proveedorId)
+    {
+        //para editar un proveedor según el proveedorId (pendiente)
+    }
+
+
+    @inject IJSRuntime JSRuntime
+
+    private async Task<bool> MostrarConfirmacion(string mensaje)
+    {
+        return await JSRuntime.InvokeAsync<bool>("confirm", mensaje);
+    }
+
+
+}
+

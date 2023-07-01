@@ -1,0 +1,63 @@
+﻿@page "/detallesdefactura"
+
+@inject IDetalleDeFacturaServices detalledefacturaServices
+
+<h3>Detalles de Factura</h3>
+
+@if (detallesDeFactura == null)
+{
+    <p>Cargando detalles de factura...</p>
+}
+else if (detallesDeFactura.Count == 0)
+{
+    <p>No se encontraron detalles de factura.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Producto</th>
+                <th>ID Factura</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in detallesDeFactura)
+            {
+                <tr>
+                    <td>@detalle.Id</td>
+                    <td>@detalle.IdProducto</td>
+                    <td>@detalle.IdFactura</td>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.Precio</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<DetalleDeFacturaResponse> detallesDeFactura;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ConsultarDetallesDeFactura();
+    }
+
+    private async Task ConsultarDetallesDeFactura()
+    {
+        var resultado = await detalledefacturaServices.Consultar(string.Empty);
+        if (resultado.Success)
+        {
+            detallesDeFactura = resultado.Data;
+        }
+        else
+        {
+            //error al consultar detalles de factura
+        }
+    }
+}
+
